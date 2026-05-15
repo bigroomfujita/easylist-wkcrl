@@ -12,7 +12,7 @@ jobs:
   update:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
 
       - name: Download EasyList
         run: curl -fsSL --retry 3 https://easylist.to/easylist/easylist.txt -o easylist.txt
