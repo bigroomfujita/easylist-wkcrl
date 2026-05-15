@@ -10,7 +10,7 @@ let package = Package(
     .executable(name: "convert", targets: ["convert"])
   ],
   dependencies: [
-    .package(url: "https://github.com/AdguardTeam/SafariConverterLib.git", from: "2.0.31")
+    .package(url: "https://github.com/AdguardTeam/SafariConverterLib.git", from: "2.1.1")
   ],
   targets: [
     .executableTarget(

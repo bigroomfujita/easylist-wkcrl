@@ -24,13 +24,15 @@ func main() {
 
   let result = ContentBlockerConverter().convertArray(
     rules: lines,
-    safariVersion: SafariVersion.autodetect(),
+    safariVersion: SafariVersion(18),
+    optimize: false,
     advancedBlocking: true,
+    advancedBlockingFormat: .txt,
     maxJsonSizeBytes: nil,
     progress: nil
   )
 
-  guard let jsonData = result.safariRulesJSON.data(using: .utf8) else {
+  guard let jsonData = result.safariRulesJSON.data(using: String.Encoding.utf8) else {
     fputs("Error: Failed to encode JSON\n", stderr)
     exit(1)
   }
@@ -48,7 +50,7 @@ func main() {
     exit(1)
   }
 
-  guard let output = String(data: prettyJSON, encoding: .utf8) else {
+  guard let output = String(data: prettyJSON, encoding: String.Encoding.utf8) else {
     fputs("Error: Failed to convert JSON to string\n", stderr)
     exit(1)
   }
