@@ -1,0 +1,26 @@
+# macOS
+.DS_Store
+*.xcodeproj/
+*.playground
+
+# Swift
+.build/
+.swiftpm/
+*.xcarchive
+*.ipa
+*.app
+
+# EasyList downloads and output
+easylist.txt
+easylist-content-rules.json
+easylist-content-rules.json.sha256
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+Thumbs.db

@@ -1,0 +1,50 @@
+name: Update Rules
+
+on:
+  schedule:
+    - cron: '0 3 1 * *'   # 毎月1日 03:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download EasyList
+        run: curl -fsSL --retry 3 https://easylist.to/easylist/easylist.txt -o easylist.txt
+
+      - name: Build converter
+        run: swift build -c release
+
+      - name: Convert filters
+        run: |
+          .build/release/convert < easylist.txt > easylist-content-rules.json
+          echo "Conversion completed"
+
+      - name: Validate JSON
+        run: |
+          jq -e 'type == "array" and length > 0' easylist-content-rules.json
+          echo "Total rules: $(jq 'length' easylist-content-rules.json)"
+          # アクションタイプ whitelist 検証（アプリ側と同じ）
+          jq -e '[.[] | .action.type] | unique - ["block", "css-display-none", "ignore-previous-rules"] | length == 0' easylist-content-rules.json
+
+      - name: Generate SHA-256
+        run: shasum -a 256 easylist-content-rules.json > easylist-content-rules.json.sha256
+
+      - name: Determine tag
+        id: tag
+        run: echo "tag=$(date -u +%Y%m%d)" >> "$GITHUB_OUTPUT"
+
+      - name: Create Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ steps.tag.outputs.tag }}" \
+            easylist-content-rules.json \
+            easylist-content-rules.json.sha256 \
+            --title "EasyList ${{ steps.tag.outputs.tag }}" \
+            --notes "Compiled $(date -u -Iseconds) from https://easylist.to/easylist/easylist.txt"
