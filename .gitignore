@@ -14,6 +14,7 @@
 easylist.txt
 easylist-content-rules.json
 easylist-content-rules.json.sha256
+easylist-content-rules.json.sig
 
 # IDE
 .vscode/
