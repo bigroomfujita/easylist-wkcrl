@@ -1,10 +1,13 @@
 import Foundation
 import ContentBlockerConverter
 
+let minimumExpectedRules = 1000
+
 func main() {
-  var input = ""
-  while let line = readLine() {
-    input += line + "\n"
+  let inputData = FileHandle.standardInput.readDataToEndOfFile()
+  guard let input = String(data: inputData, encoding: String.Encoding.utf8) else {
+    fputs("Error: Failed to decode stdin as UTF-8\n", stderr)
+    exit(1)
   }
 
   let lines = input
@@ -22,6 +25,8 @@ func main() {
     exit(1)
   }
 
+  fputs("Input: \(lines.count) filter rules\n", stderr)
+
   let result = ContentBlockerConverter().convertArray(
     rules: lines,
     safariVersion: SafariVersion(18),
@@ -32,30 +37,23 @@ func main() {
     progress: nil
   )
 
-  guard let jsonData = result.converted.data(using: String.Encoding.utf8) else {
-    fputs("Error: Failed to encode JSON\n", stderr)
+  fputs("Converted: \(result.convertedCount) / total: \(result.totalConvertedCount)\n", stderr)
+  fputs("Errors: \(result.errorsCount), OverLimit: \(result.overLimit)\n", stderr)
+  if !result.message.isEmpty {
+    fputs("Message: \(result.message)\n", stderr)
+  }
+
+  if result.overLimit {
+    fputs("Error: Ruleset exceeded Safari content blocker limit\n", stderr)
     exit(1)
   }
 
-  guard let jsonObject = try? JSONSerialization.jsonObject(with: jsonData) as? [[String: Any]] else {
-    fputs("Error: Invalid JSON generated\n", stderr)
+  if result.convertedCount < minimumExpectedRules {
+    fputs("Error: Only \(result.convertedCount) rules converted (minimum: \(minimumExpectedRules))\n", stderr)
     exit(1)
   }
 
-  guard let prettyJSON = try? JSONSerialization.data(
-    withJSONObject: jsonObject,
-    options: [.prettyPrinted, .sortedKeys]
-  ) else {
-    fputs("Error: Failed to format JSON\n", stderr)
-    exit(1)
-  }
-
-  guard let output = String(data: prettyJSON, encoding: String.Encoding.utf8) else {
-    fputs("Error: Failed to convert JSON to string\n", stderr)
-    exit(1)
-  }
-
-  print(output)
+  print(result.converted)
 }
 
 main()
