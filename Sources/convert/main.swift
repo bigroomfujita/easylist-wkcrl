@@ -32,7 +32,7 @@ func main() {
     progress: nil
   )
 
-  guard let jsonData = result.safariRulesJSON.data(using: String.Encoding.utf8) else {
+  guard let jsonData = result.converted.data(using: String.Encoding.utf8) else {
     fputs("Error: Failed to encode JSON\n", stderr)
     exit(1)
   }
