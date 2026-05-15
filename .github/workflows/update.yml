@@ -68,8 +68,9 @@ jobs:
         env:
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
         run: |
+          OPENSSL="$(brew --prefix openssl@3)/bin/openssl"
           printf '%s' "$SIGNING_KEY" > private.pem
-          openssl pkeyutl -sign -rawin \
+          "$OPENSSL" pkeyutl -sign -rawin \
             -inkey private.pem \
             -in easylist-content-rules.json \
             -out easylist-content-rules.json.sig
