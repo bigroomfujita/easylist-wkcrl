@@ -111,6 +111,14 @@ jobs:
           \`\`\`
           ${ACTION_TYPES}
           \`\`\`
+
+          ---
+
+          ## License
+
+          easylist-content-rules.json is a derivative work of EasyList by The EasyList authors.
+          Distributed under CC BY-SA 3.0 or later — https://creativecommons.org/licenses/by-sa/3.0/
+          Source: https://easylist.to/ | EasyList license: https://easylist.to/pages/licence.html
           EOF
           )
           gh release create "${{ steps.tag.outputs.tag }}" \
